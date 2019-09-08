@@ -50,3 +50,9 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Lexical analyzer
+lex.yy.c
+
+# Targets
+lexical_analyzer
