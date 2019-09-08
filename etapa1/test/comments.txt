@@ -1,0 +1,10 @@
+int ai;
+/* if(i>0)*/
+// if(i>0)
+/*if*/
+//lif
+int a = 2;
+/**/
+int a; //
+int a; //oi
+int a; /*oi*/

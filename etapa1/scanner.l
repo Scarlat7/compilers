@@ -3,12 +3,15 @@
 	#include "tokens.h"
 
 	int lineNumber = 1;
+	int comment_found;
 
 	int get_line_number(void){
 		return lineNumber;
 	}
 
 %}
+
+%x comment
 
 digit 		[0-9]
 letter 		[A-Za-z]
@@ -20,9 +23,18 @@ integer		[+-]?{digit}+
 real		{integer}(\.{digit}+)?((E|e){integer})?
 character	\'[^\n']?\'
 str			\"[^\n"]*\"
+line_comm	"//".*
 
 %%
-
+"/*"		{
+				comment_found = INITIAL;
+				BEGIN(comment);
+			}
+			<comment>[^*\n]*
+			<comment>"*"+[^*/\n]*
+			<comment>\n 			lineNumber++;
+			<comment>"*"+"/"		BEGIN(comment_found);
+{line_comm}	{/* DO NOTHING */}
 "int"		{return TK_PR_INT;}
 "float"		{return TK_PR_FLOAT;}
 "bool"		{return TK_PR_BOOL;}
