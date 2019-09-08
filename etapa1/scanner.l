@@ -10,12 +10,16 @@
 
 %}
 
-digit 	[0-9]
-letter 	[A-Za-z]
-letter_ {letter}|[_]
-delim 	[ \t\r]
-ws 		{delim}+
-id 		{letter_}({letter_}|{digit})*
+digit 		[0-9]
+letter 		[A-Za-z]
+letter_ 	{letter}|[_]
+delim 		[ \t\r]
+ws 			{delim}+
+id 			{letter_}({letter_}|{digit})*
+integer		[+-]?{digit}+
+real		{integer}(\.{digit}+)?((E|e){integer})?
+character	\'[^\n']?\'
+str			\"[^\n"]*\"
 
 %%
 
@@ -84,7 +88,13 @@ id 		{letter_}({letter_}|{digit})*
 "<<"		{return TK_OC_SL;}
 "%>%"		{return TK_OC_FORWARD_PIPE;}
 "%|%"		{return TK_OC_BASH_PIPE;}
+"true"		{return TK_LIT_TRUE;}
+"false"		{return TK_LIT_FALSE;}
 {id}		{return TK_IDENTIFICADOR;}
+{integer}	{return TK_LIT_INT;}
+{real}		{return TK_LIT_FLOAT;}
+{character}	{return TK_LIT_CHAR;}
+{str}		{return TK_LIT_STRING;}
 {ws}		{/* DO NOTHING */}
 [\n]		{lineNumber++;}
 .			{return TOKEN_ERRO;}
