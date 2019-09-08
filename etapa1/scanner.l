@@ -10,10 +10,12 @@
 
 %}
 
-digit [0-9]
-letter [A-Za-z]
-delim [ \t\r] 
-ws {delim}+
+digit 	[0-9]
+letter 	[A-Za-z]
+letter_ {letter}|[_]
+delim 	[ \t\r]
+ws 		{delim}+
+id 		{letter_}({letter_}|{digit})*
 
 %%
 
@@ -82,5 +84,7 @@ ws {delim}+
 "<<"		{return TK_OC_SL;}
 "%>%"		{return TK_OC_FORWARD_PIPE;}
 "%|%"		{return TK_OC_BASH_PIPE;}
+{id}		{return TK_IDENTIFICADOR;}
 {ws}		{/* DO NOTHING */}
 [\n]		{lineNumber++;}
+.			{return TOKEN_ERRO;}
