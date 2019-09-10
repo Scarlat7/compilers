@@ -6,7 +6,7 @@ CC = gcc
 CFLAGS = -Wall
 
 # The target executable
-TARGET = lexical_analyzer
+TARGET = etapa1
 
 # Compiles all
 all : $(TARGET)
