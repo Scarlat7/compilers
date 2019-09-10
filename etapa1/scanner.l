@@ -1,5 +1,4 @@
 %{
-	#define YYSTYPE double
 	#include "tokens.h"
 
 	int lineNumber = 1;
@@ -8,7 +7,6 @@
 	int get_line_number(void){
 		return lineNumber;
 	}
-
 %}
 
 %x comment
@@ -16,13 +14,14 @@
 digit 		[0-9]
 letter 		[A-Za-z]
 letter_ 	{letter}|[_]
-delim 		[ \t\r]
+delim 		[\ \t\r]
+signal		[+-]
 ws 			{delim}+
 id 			{letter_}({letter_}|{digit})*
-integer		[+-]?{digit}+
+integer		{signal}?{digit}+
 real		{integer}(\.{digit}+)?((E|e){integer})?
 character	\'[^\n']?\'
-str			\"[^\n"]*\"
+str			\"(\\.|[^\\\n"])*\"
 line_comm	"//".*
 
 %%
