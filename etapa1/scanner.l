@@ -16,7 +16,7 @@ letter 		[A-Za-z]
 letter_ 	{letter}|[_]
 delim 		[ \t\r]
 signal		[+-]
-sp_char		[,;:()\[\]{}+-|?@*/<>=!&%#^.$~`]
+sp_char		[,;:()\[\]{}\+\-|?\*@/<>=!&%#^.$~`]
 ws 			{delim}+
 id 			{letter_}({letter_}|{digit})*
 integer		{signal}?{digit}+
@@ -24,6 +24,8 @@ real		{integer}(\.{digit}+)?((E|e){integer})?
 character	\'[^\n']?\'
 str			\"(\\.|[^\\\n"])*\"
 line_comm	"//".*
+non_id		({integer}|{real}){id}+
+dup_char	\'[^\n'][^\n']+\'
 
 %%
 "/*"		{
@@ -82,4 +84,6 @@ line_comm	"//".*
 {str}		{return TK_LIT_STRING;}
 {ws}		{/* DO NOTHING */}
 [\n]		{lineNumber++;}
+{non_id}	{return TOKEN_ERRO;}
+{dup_char}	{return TOKEN_ERRO;}
 .			{return TOKEN_ERRO;}
