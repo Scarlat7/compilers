@@ -14,8 +14,9 @@
 digit 		[0-9]
 letter 		[A-Za-z]
 letter_ 	{letter}|[_]
-delim 		[\ \t\r]
+delim 		[ \t\r]
 signal		[+-]
+sp_char		[,;:()\[\]{}+-|?@*/<>=!&%#^.$~`]
 ws 			{delim}+
 id 			{letter_}({letter_}|{digit})*
 integer		{signal}?{digit}+
@@ -61,34 +62,6 @@ line_comm	"//".*
 "protected"	{return TK_PR_PROTECTED;}
 "end"		{return TK_PR_END;}
 "default"	{return TK_PR_DEFAULT;}
-","			{return (int)',';}
-";"			{return (int)';';}
-":"			{return (int)':';}
-"("			{return (int)'(';}
-")"			{return (int)')';}
-"["			{return (int)'[';}
-"]"			{return (int)']';}
-"{"			{return (int)'{';}
-"}"			{return (int)'}';}
-"+"			{return (int)'+';}
-"-"			{return (int)'-';}
-"|"			{return (int)'|';}
-"?"			{return (int)'?';}
-"@"			{return (int)'@';}
-"*"			{return (int)'*';}
-"/"			{return (int)'/';}
-"<"			{return (int)'<';}
-">"			{return (int)'>';}
-"="			{return (int)'=';}
-"!"			{return (int)'!';}
-"&"			{return (int)'&';}
-"%"			{return (int)'%';}
-"#"			{return (int)'#';}
-"^"			{return (int)'^';}
-"."			{return (int)'.';}
-"$"			{return (int)'$';}
-"~"			{return (int)'~';}
-"`"			{return (int)'`';}
 "<="		{return TK_OC_LE;}
 ">="		{return TK_OC_GE;}
 "=="		{return TK_OC_EQ;}
@@ -101,6 +74,7 @@ line_comm	"//".*
 "%|%"		{return TK_OC_BASH_PIPE;}
 "true"		{return TK_LIT_TRUE;}
 "false"		{return TK_LIT_FALSE;}
+{sp_char}	{return (int) yytext[0];}
 {id}		{return TK_IDENTIFICADOR;}
 {integer}	{return TK_LIT_INT;}
 {real}		{return TK_LIT_FLOAT;}
