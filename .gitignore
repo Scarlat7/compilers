@@ -54,5 +54,10 @@ dkms.conf
 # Lexical analyzer
 lex.yy.c
 
+# Syntax analyzer
+parser.tab.c
+parser.tab.h
+
 # Targets
-lexical_analyzer
+etapa1
+etapa2
