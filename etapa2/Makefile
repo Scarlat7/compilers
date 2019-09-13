@@ -17,7 +17,7 @@ $(TARGET):  parser.tab.c lex.yy.c lex.yy.o parser.tab.o main.o
 
 # Generates the y.tab.c  bison file
 parser.tab.c: parser.y
-	bison -d parser.y
+	bison -d parser.y -v
 
 # Generates the lex.yy.c flex file
 lex.yy.c: scanner.l
@@ -37,4 +37,4 @@ main.o: main.c
 
 # Deletes object files, the target and the bison/flex files
 clean:
-	rm *.o $(TARGET) lex.yy.c parser.tab.c parser.tab.h
+	rm *.o $(TARGET) lex.yy.c parser.tab.c parser.tab.h parser.output
