@@ -63,9 +63,16 @@
 %left TK_OC_EQ TK_OC_NE
 %left TK_OC_AND TK_OC_OR
 %left '&' '|'
-%left '^'
-%right '?' ':'
-/*%right '^' '='*/
+%right '^'
+%right '?' ':' 
+%right '#' '!'
+
+/* Different associativity based in whether it's a binary or unary op */
+%left UMINUS
+%left UPLUS
+%left UADRESS
+%left UPOINTER
+/*%right ='*/
 
 /* Detailed error message */
 %define parse.error verbose
@@ -76,16 +83,16 @@
 /*expression: '(' expression ')' |*/
 
 /* Unary operators */
-/*'+' expression |
-'-' expression |
+expression: '+' expression %prec UPLUS |
+'-' expression %prec UMINUS |
 '!' expression |
-'&' expression |
-'*' expression |
+'&' expression %prec UADRESS |
+'*' expression %prec UPOINTER |
 '?' expression |
-'#' expression |*/
+'#' expression |
 
 /* Binary operators */
-expression: expression '+' expression |
+expression '+' expression |
 expression '-' expression |
 expression '*' expression |
 expression '/' expression |
