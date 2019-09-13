@@ -1,6 +1,10 @@
 %{
-int yylex(void);
-void yyerror (char const *s);
+	#include <stdio.h>
+
+	int yylex(void);
+	void yyerror (char const *s){
+		fprintf(stderr, "%s\n");
+	}
 %}
 
 %token TK_PR_INT

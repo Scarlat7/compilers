@@ -12,11 +12,11 @@ TARGET = etapa2
 all : $(TARGET)
 
 # Links all objects file to generate the target
-$(TARGET):  y.tab.c lex.yy.c lex.yy.o y.tab.o main.o
-	$(CC) $(CFLAGS) lex.yy.o y.tab.o main.o -o $(TARGET) -lfl
+$(TARGET):  parser.tab.c lex.yy.c lex.yy.o parser.tab.o main.o
+	$(CC) $(CFLAGS) lex.yy.o parser.tab.o main.o -o $(TARGET) -lfl
 
 # Generates the y.tab.c  bison file
-y.tab.c: parser.y
+parser.tab.c: parser.y
 	bison -d parser.y
 
 # Generates the lex.yy.c flex file
@@ -27,9 +27,9 @@ lex.yy.c: scanner.l
 lex.yy.o: lex.yy.c
 	gcc -c lex.yy.c
 
-# Generates the y.tab.o object file
-y.tab.o: y.tab.o
-	gcc -c y.tab.c
+# Generates the parser.tab.o object file
+parser.tab.o: parser.tab.c
+	gcc -c parser.tab.c
 
 # Generates the main.o object file
 main.o: main.c
@@ -37,4 +37,4 @@ main.o: main.c
 
 # Deletes object files, the target and the bison/flex files
 clean:
-	rm *.o $(TARGET) lex.yy.c y.tab.c
+	rm *.o $(TARGET) lex.yy.c parser.tab.c parser.tab.h
