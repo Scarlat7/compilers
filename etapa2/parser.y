@@ -55,9 +55,16 @@
 %token TOKEN_ERRO
 
 /* Operators precedence */
+%left '(' ')' '[' ']'
 %left '+' '-'
-%right '?'
-%left ':'
+%left '*' '/' '%'
+%left TK_OC_SR TK_OC_SL
+%left TK_OC_LE TK_OC_GE '>' '<'
+%left TK_OC_EQ TK_OC_NE
+%left TK_OC_AND TK_OC_OR
+%left '&' '|'
+%left '^'
+%right '?' ':'
 /*%right '^' '='*/
 
 /* Detailed error message */
@@ -78,7 +85,7 @@
 '#' expression |*/
 
 /* Binary operators */
-/*expression '+' expression |
+expression: expression '+' expression |
 expression '-' expression |
 expression '*' expression |
 expression '/' expression |
@@ -87,7 +94,7 @@ expression '|' expression |
 expression '&' expression |
 expression '^' expression |
 expression '<' expression |
-expression '>' expression |
+expression '>' expression | 
 expression TK_OC_LE expression |
 expression TK_OC_EQ expression |
 expression TK_OC_GE expression |
@@ -95,10 +102,10 @@ expression TK_OC_NE expression |
 expression TK_OC_AND expression |
 expression TK_OC_OR expression |
 expression TK_OC_SL expression |
-expression TK_OC_SR expression |*/
+expression TK_OC_SR expression |
 
 /* Ternary */
-expression: expression '?' expression ':' expression |
+expression '?' expression ':' expression |
 
 /* Arithmetic end-terms */
 TK_LIT_INT | TK_LIT_FLOAT | 
