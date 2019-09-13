@@ -7,6 +7,7 @@
 	}
 %}
 
+/* Tokens definition */
 %token TK_PR_INT
 %token TK_PR_FLOAT
 %token TK_PR_BOOL
@@ -53,8 +54,57 @@
 %token TK_IDENTIFICADOR
 %token TOKEN_ERRO
 
+/* Operators precedence */
+%left '+' '-'
+%right '?'
+%left ':'
+/*%right '^' '='*/
+
+/* Detailed error message */
+%define parse.error verbose
+
 %%
 
-programa:
+/*programa:*/
+/*expression: '(' expression ')' |*/
+
+/* Unary operators */
+/*'+' expression |
+'-' expression |
+'!' expression |
+'&' expression |
+'*' expression |
+'?' expression |
+'#' expression |*/
+
+/* Binary operators */
+/*expression '+' expression |
+expression '-' expression |
+expression '*' expression |
+expression '/' expression |
+expression '%' expression |
+expression '|' expression |
+expression '&' expression |
+expression '^' expression |
+expression '<' expression |
+expression '>' expression |
+expression TK_OC_LE expression |
+expression TK_OC_EQ expression |
+expression TK_OC_GE expression |
+expression TK_OC_NE expression |
+expression TK_OC_AND expression |
+expression TK_OC_OR expression |
+expression TK_OC_SL expression |
+expression TK_OC_SR expression |*/
+
+/* Ternary */
+expression: expression '?' expression ':' expression |
+
+/* Arithmetic end-terms */
+TK_LIT_INT | TK_LIT_FLOAT | 
+
+/* Logic end-terms */
+TK_LIT_TRUE | TK_LIT_FALSE;
+
 
 %%
