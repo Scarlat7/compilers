@@ -1,6 +1,5 @@
 %{
-	#include "tokens.h"
-	#include "y.tab.h"
+	#include "parser.tab.h"
 
 	int lineNumber = 1;
 	int comment_found;
@@ -20,7 +19,7 @@ signal		[+-]
 sp_char		[,;:()\[\]{}\+\-|?\*@/<>=!&%#^.$~`]
 ws 			{delim}+
 id 			{letter_}({letter_}|{digit})*
-integer		{signal}?{digit}+
+integer		{digit}+
 real		{integer}(\.{digit}+)?((E|e){integer})?
 character	\'[^\n']?\'
 str			\"(\\.|[^\\\n"])*\"
