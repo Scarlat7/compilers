@@ -1,9 +1,10 @@
 %{
 	#include <stdio.h>
 
+	extern int get_line_number(void);
 	int yylex(void);
-	void yyerror (char const *s){
-		fprintf(stderr, "%s\n");
+	void yyerror (char const *str){
+		fprintf(stderr, "%s on line %d\n", str, get_line_number());
 	}
 %}
 
@@ -73,7 +74,6 @@
 %left UPLUS
 %left UADRESS
 %left UPOINTER
-/*%right ='*/
 
 /* Detailed error message */
 %define parse.error verbose
@@ -105,11 +105,17 @@ param: type TK_IDENTIFICADOR | TK_PR_CONST type TK_IDENTIFICADOR;
 simple_command: commands ';';
 commands: var_declaration | attribution | input | output |
 function_call | return | break | continue | command_block |
-while | for  | ifelse;
+while | for  | ifelse | shifts;
 
 /* Command block */
 command_block: '{' command_list '}';
 command_list: command_list simple_command | /* Empty */;
+
+/* Shifts op */
+shifts: TK_IDENTIFICADOR TK_OC_SL expression |
+TK_IDENTIFICADOR TK_OC_SR expression |
+TK_IDENTIFICADOR '[' expression ']' TK_OC_SL expression |
+TK_IDENTIFICADOR '[' expression ']' TK_OC_SR expression;
 
 /* Flow control */
 while: TK_PR_WHILE '(' expression ')' TK_PR_DO command_block;
@@ -120,7 +126,7 @@ TK_PR_IF '(' expression ')' command_block TK_PR_ELSE command_block;
 /* List of possible for commands */
 list_for: list_for  ',' commands_for  | commands_for| /* Empty */;
 commands_for: var_declaration | attribution | input | return |
-break | continue | expression; 
+break | continue | expression | shifts; 
 
 /* Variable declaration */
 var_declaration: var_params type TK_IDENTIFICADOR |
@@ -138,7 +144,7 @@ TK_LIT_STRING | TK_LIT_CHAR;
 type: TK_PR_INT | TK_PR_FLOAT | TK_PR_CHAR | TK_PR_BOOL | TK_PR_STRING;
 
 /* Variable parameters */
-var_params: TK_PR_STATIC | TK_PR_STATIC TK_PR_CONST;
+var_params: TK_PR_STATIC | TK_PR_CONST | TK_PR_STATIC TK_PR_CONST | /* Empty */;
 
 /* Attribution */
 attribution: TK_IDENTIFICADOR '=' expression |
@@ -191,8 +197,6 @@ expression TK_OC_GE expression |
 expression TK_OC_NE expression |
 expression TK_OC_AND expression |
 expression TK_OC_OR expression |
-expression TK_OC_SL expression |
-expression TK_OC_SR expression |
 
 /* Ternary */
 expression '?' expression ':' expression |
