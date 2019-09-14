@@ -1,0 +1,7 @@
+//if com declaracao de variavel
+int main()
+{
+  if (true) {
+    int x;
+  };
+}

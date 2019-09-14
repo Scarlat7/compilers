@@ -19,12 +19,10 @@ then
 fi
 
 TEST_DIR="test${ETAPA}/*"
-INDEX=1
 
 for testfile in $TEST_DIR
 do
-	echo "************ TEST NB $INDEX ************" >> test_result.txt
+	echo "************ TEST $testfile ************" >> test_result.txt
 	cat $testfile >> test_result.txt
-	cat $testfile | ./etapa$ETAPA/etapa$ETAPA >> test_result.txt
-	let "INDEX = $INDEX + 1"
+	cat $testfile | ./etapa$ETAPA/etapa$ETAPA >> test_result.txt 2>&1
 done
