@@ -66,6 +66,7 @@
 %right '^'
 %right '?' ':' 
 %right '#' '!'
+%right '='
 
 /* Different associativity based in whether it's a binary or unary op */
 %left UMINUS
@@ -77,9 +78,91 @@
 /* Detailed error message */
 %define parse.error verbose
 
+%start program
 %%
 
-/*programa:*/
+program: program function |
+program global_var |
+/* Empty */;
+
+/* Global variables */
+global_var: global_var_types ';' | 
+TK_PR_STATIC global_var_types ';';
+
+global_var_types: type TK_IDENTIFICADOR | type TK_IDENTIFICADOR '[' TK_LIT_INT ']' |
+type TK_IDENTIFICADOR '[' '+' TK_LIT_INT ']';
+
+/* Function definition */
+function: header command_block;
+header: type TK_IDENTIFICADOR '(' list_params ')' |
+TK_PR_STATIC type TK_IDENTIFICADOR '(' list_params ')';
+
+/* List of function parameters */
+list_params: list_params ',' param | param | /* Empty */;
+param: type TK_IDENTIFICADOR | TK_PR_CONST type TK_IDENTIFICADOR;
+
+/* Simple commands */
+simple_command: commands ';';
+commands: var_declaration | attribution | input | output |
+function_call | return | break | continue | command_block |
+while | for  | ifelse;
+
+/* Command block */
+command_block: '{' command_list '}';
+command_list: command_list simple_command | /* Empty */;
+
+/* Flow control */
+while: TK_PR_WHILE '(' expression ')' TK_PR_DO command_block;
+for: TK_PR_FOR '(' list_for ':' expression ':' list_for ')' command_block;
+ifelse: TK_PR_IF '(' expression ')' command_block |
+TK_PR_IF '(' expression ')' command_block TK_PR_ELSE command_block;
+
+/* List of possible for commands */
+list_for: list_for  ',' commands_for  | commands_for| /* Empty */;
+commands_for: var_declaration | attribution | input | return |
+break | continue | expression; 
+
+/* Variable declaration */
+var_declaration: var_params type TK_IDENTIFICADOR |
+var_params type TK_IDENTIFICADOR TK_OC_LE initializations;
+
+/* Possible variable initializations */
+initializations: TK_IDENTIFICADOR | literals;
+
+/* Literals */
+literals: TK_LIT_TRUE | TK_LIT_FALSE |
+TK_LIT_INT | TK_LIT_FLOAT |
+TK_LIT_STRING | TK_LIT_CHAR;
+
+/* Variable types */
+type: TK_PR_INT | TK_PR_FLOAT | TK_PR_CHAR | TK_PR_BOOL | TK_PR_STRING;
+
+/* Variable parameters */
+var_params: TK_PR_STATIC | TK_PR_STATIC TK_PR_CONST;
+
+/* Attribution */
+attribution: TK_IDENTIFICADOR '=' expression |
+TK_IDENTIFICADOR '[' expression ']' '=' expression;
+
+/* IO commands */
+input: TK_PR_INPUT expression;
+output: TK_PR_OUTPUT non_void_list;
+
+/* Non-void list */
+non_void_list: list ',' expression | expression;
+
+/* Function call */
+function_call: TK_IDENTIFICADOR '(' list ')';
+
+/* List */
+list: list ',' expression | expression | /* Empty */;
+
+/* Control commands */
+return: TK_PR_RETURN expression;
+break: TK_PR_BREAK;
+continue: TK_PR_CONTINUE;
+
+/* Arithmetic and logical expressions */
 expression: '(' expression ')' |
 
 /* Unary operators */
@@ -118,7 +201,7 @@ expression '?' expression ':' expression |
 TK_IDENTIFICADOR '[' expression ']' |
 
 /* Function */
-TK_IDENTIFICADOR '(' list ')' |
+function_call |
 
 /* Arithmetic end-terms */
 TK_LIT_INT | TK_LIT_FLOAT | 
@@ -128,9 +211,5 @@ TK_LIT_TRUE | TK_LIT_FALSE|
 
 /* Identifier end-term*/
 TK_IDENTIFICADOR;
-
-/* List */
-list: list ',' expression | expression | /* Empty */;
-
 
 %%
