@@ -80,10 +80,10 @@
 %%
 
 /*programa:*/
-/*expression: '(' expression ')' |*/
+expression: '(' expression ')' |
 
 /* Unary operators */
-expression: '+' expression %prec UPLUS |
+'+' expression %prec UPLUS |
 '-' expression %prec UMINUS |
 '!' expression |
 '&' expression %prec UADRESS |
@@ -114,11 +114,23 @@ expression TK_OC_SR expression |
 /* Ternary */
 expression '?' expression ':' expression |
 
+/* Vector */
+TK_IDENTIFICADOR '[' expression ']' |
+
+/* Function */
+TK_IDENTIFICADOR '(' list ')' |
+
 /* Arithmetic end-terms */
 TK_LIT_INT | TK_LIT_FLOAT | 
 
 /* Logic end-terms */
-TK_LIT_TRUE | TK_LIT_FALSE;
+TK_LIT_TRUE | TK_LIT_FALSE|
+
+/* Identifier end-term*/
+TK_IDENTIFICADOR;
+
+/* List */
+list: list ',' expression | expression | /* Empty */;
 
 
 %%
