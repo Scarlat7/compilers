@@ -102,10 +102,11 @@ list_params: list_params ',' param | param | /* Empty */;
 param: type TK_IDENTIFICADOR | TK_PR_CONST type TK_IDENTIFICADOR;
 
 /* Simple commands */
-simple_command: commands ';';
+simple_command: commands ';' | while | for | ifelse;
+
 commands: var_declaration | attribution | input | output |
 function_call | return | break | continue | command_block |
-while | for  | ifelse | shifts;
+shifts;
 
 /* Command block */
 command_block: '{' command_list '}';
@@ -124,7 +125,7 @@ ifelse: TK_PR_IF '(' expression ')' command_block |
 TK_PR_IF '(' expression ')' command_block TK_PR_ELSE command_block;
 
 /* List of possible for commands */
-list_for: list_for  ',' commands_for  | commands_for| /* Empty */;
+list_for: list_for  ',' commands_for  | commands_for ;
 commands_for: var_declaration | attribution | input | return |
 break | continue | expression | shifts; 
 
