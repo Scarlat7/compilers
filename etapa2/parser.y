@@ -102,11 +102,11 @@ list_params: list_params ',' param | param | /* Empty */;
 param: type TK_IDENTIFICADOR | TK_PR_CONST type TK_IDENTIFICADOR;
 
 /* Simple commands */
-simple_command: commands ';' | while | for | ifelse;
+simple_command: commands ';';
 
 commands: var_declaration | attribution | input | output |
 function_call | return | break | continue | command_block |
-shifts;
+shifts | while | for | ifelse ;
 
 /* Command block */
 command_block: '{' command_list '}';
