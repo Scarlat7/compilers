@@ -61,6 +61,7 @@ parser.tab.h
 # Targets
 etapa1
 etapa2
+etapa3
 
 # Test results
 test_result.txt
