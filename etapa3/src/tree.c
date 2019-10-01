@@ -33,3 +33,21 @@ void insert_child(*Tree parent, *Tree child){
 		parent->nb_children += 1;
 	}
 }
+
+void print_tree_depth(*Tree tree, int level){
+	if(tree != NULL){
+		Tree* current = tree->first_child
+		print_tree_depth(current, level+1);
+		print_spaces(level);
+		printf("%p[%d]: %p\n",tree,tree->nb_children,tree->value);
+		while(current->next_sibling != NULL){
+			current = current->next_sibling;
+			print_tree_depth(current,level+1);
+		}
+	}
+}
+
+void print_spaces(int spaces){
+	while(spaces-- > 0)
+		printf(' ');
+}
