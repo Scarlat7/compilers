@@ -1,4 +1,4 @@
-//As expressões podem ser de três tipos: aritméticas, lógicas, e com pipes.
+//As expressões podem ser de dois tipos: aritméticas, lógicas.
 int f()
 {
   int a;

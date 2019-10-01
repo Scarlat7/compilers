@@ -1,4 +1,5 @@
-//As variáveis são declaradas pelo seu tipo, seguidas de seu nome
+//DECL
+//As variáveis são declaradas pelo tipo seguido de seu nome.
 //variáveis globais
 int v1;
 

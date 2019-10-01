@@ -1,4 +1,4 @@
-//if com declaracao de variavel
+//ERROR: if sem else
 int main()
 {
   if (true) {
