@@ -1,4 +1,5 @@
 %{
+	#include <stdlib.h>
 	#include "parser.tab.h"
 
 	int lineNumber = 1;
@@ -74,14 +75,63 @@ dup_char	\'[^\n'][^\n']+\'
 "<<"		{return TK_OC_SL;}
 "%>%"		{return TK_OC_FORWARD_PIPE;}
 "%|%"		{return TK_OC_BASH_PIPE;}
-"true"		{return TK_LIT_TRUE;}
-"false"		{return TK_LIT_FALSE;}
-{sp_char}	{return (int) yytext[0];}
-{id}		{return TK_IDENTIFICADOR;}
-{integer}	{return TK_LIT_INT;}
-{real}		{return TK_LIT_FLOAT;}
-{character}	{return TK_LIT_CHAR;}
-{str}		{return TK_LIT_STRING;}
+"true"		{
+	yylval.valor_lexico.line_number = lineNumber;
+	yylval.valor_lexico.token_type = Literal;
+	yylval.valor_lexico.token_val.literal_type = LiteralBool;
+	yylval.valor_lexico.token_val.int_value = 1;
+	yylval.valor_lexico.token_val.str = strdup(yytext);
+	return TK_LIT_TRUE;
+}
+"false"		{
+	yylval.valor_lexico.line_number = lineNumber;
+	yylval.valor_lexico.token_type = Literal;
+	yylval.valor_lexico.token_val.literal_type = LiteralBool;
+	yylval.valor_lexico.token_val.int_value = 1;
+	yylval.valor_lexico.token_val.str = strdup(yytext);
+	return TK_LIT_FALSE;
+}
+{sp_char}	{return yytext[0];}
+{id}		{
+	yylval.valor_lexico.line_number = lineNumber;
+	yylval.valor_lexico.token_type = Identifier;
+	yylval.valor_lexico.token_val.str = strdup(yytext);
+	return TK_IDENTIFICADOR;
+}
+
+{integer}	{
+	yylval.valor_lexico.line_number = lineNumber;
+	yylval.valor_lexico.token_type = Literal;
+	yylval.valor_lexico.token_val.literal_type = LiteralInt;
+	yylval.valor_lexico.token_val.int_value = atoi(yytext);
+	yylval.valor_lexico.token_val.str = strdup(yytext);
+	return TK_LIT_INT;
+}
+
+{real}		{
+	yylval.valor_lexico.line_number = lineNumber;
+	yylval.valor_lexico.token_type = Literal;
+	yylval.valor_lexico.token_val.literal_type = LiteralFloat;
+	yylval.valor_lexico.token_val.float_value = atof(yytext);
+	yylval.valor_lexico.token_val.str = strdup(yytext);
+	return TK_LIT_FLOAT;
+}
+
+{character}	{
+	yylval.valor_lexico.line_number = lineNumber;
+	yylval.valor_lexico.token_type = Literal;
+	yylval.valor_lexico.token_val.literal_type = LiteralChar;
+	yylval.valor_lexico.token_val.str = remove_quotes(yytext);
+	return TK_LIT_CHAR;
+}
+
+{str}		{
+	yylval.valor_lexico.line_number = lineNumber;
+	yylval.valor_lexico.token_type = Literal;
+	yylval.valor_lexico.token_val.literal_type = LiteralString;
+	yylval.valor_lexico.token_val.str = remove_quotes(yytext);
+	return TK_LIT_STRING;
+}
 {ws}		{/* DO NOTHING */}
 [\n]		{lineNumber++;}
 {non_id}	{return TOKEN_ERRO;}
