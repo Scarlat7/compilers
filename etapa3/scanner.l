@@ -87,7 +87,7 @@ dup_char	\'[^\n'][^\n']+\'
 	yylval.valor_lexico.line_number = lineNumber;
 	yylval.valor_lexico.token_type = Literal;
 	yylval.valor_lexico.token_val.literal_type = LiteralBool;
-	yylval.valor_lexico.token_val.int_value = 1;
+	yylval.valor_lexico.token_val.int_value = 0;
 	yylval.valor_lexico.token_val.str = strdup(yytext);
 	return TK_LIT_FALSE;
 }
