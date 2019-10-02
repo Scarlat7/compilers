@@ -78,6 +78,10 @@
 %type <valor_lexico> TK_IDENTIFICADOR
 %type <Tree> expression
 %type <Tree> function_call
+%type <Tree> break
+%type <Tree> continue
+%type <Tree> return
+%type <Tree> attribution
 
 /* Operators precedence */
 
@@ -174,8 +178,15 @@ type: TK_PR_INT | TK_PR_FLOAT | TK_PR_CHAR | TK_PR_BOOL | TK_PR_STRING;
 var_params: TK_PR_STATIC | TK_PR_CONST | TK_PR_STATIC TK_PR_CONST | /* Empty */;
 
 /* Attribution */
-attribution: TK_IDENTIFICADOR '=' expression |
-TK_IDENTIFICADOR '[' expression ']' '=' expression;
+attribution: TK_IDENTIFICADOR '=' expression {
+	Tree* id = make_node(IDENTIFIER, $1);
+	$$ = binary_node(ASSIGNMENT, id, $3);
+} |
+TK_IDENTIFICADOR '[' expression ']' '=' expression {
+	Tree* id = make_node(IDENTIFIER, $1);
+	Tree *array = binary_node(ARRAY, id, $3);
+	$$ = binary_node(ASSIGNMENT, array, $6);
+} ;
 
 /* IO commands */
 input: TK_PR_INPUT expression;
@@ -191,9 +202,9 @@ function_call: TK_IDENTIFICADOR '(' list ')';
 list: list ',' expression | expression | /* Empty */;
 
 /* Control commands */
-return: TK_PR_RETURN expression;
-break: TK_PR_BREAK;
-continue: TK_PR_CONTINUE;
+return: TK_PR_RETURN expression {$$ = unary_node(RETURN, $2);} ;
+break: TK_PR_BREAK {ValorLexico dummy; $$ = make_node(BREAK, dummy);} ;
+continue: TK_PR_CONTINUE {ValorLexico dummy; $$ = make_node(CONTINUE, dummy);} ;
 
 /* Arithmetic and logical expressions */
 expression: '(' expression ')' {$$ = $2;} |
