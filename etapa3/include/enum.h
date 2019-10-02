@@ -4,14 +4,6 @@
 #define ENUM_H
 
 typedef enum { 
-	ReservedWord,
-	SpecialChar,
-	CompoundOperator,
-	Identifier,
-	Literal
-} TokenType;
-
-typedef enum { 
 	LiteralChar,
 	LiteralString,
 	LiteralBool,

@@ -77,7 +77,6 @@ dup_char	\'[^\n'][^\n']+\'
 "%|%"		{return TK_OC_BASH_PIPE;}
 "true"		{
 	yylval.valor_lexico.line_number = lineNumber;
-	yylval.valor_lexico.token_type = Literal;
 	yylval.valor_lexico.token_val.literal_type = LiteralBool;
 	yylval.valor_lexico.token_val.int_value = 1;
 	yylval.valor_lexico.token_val.str = strdup(yytext);
@@ -85,7 +84,6 @@ dup_char	\'[^\n'][^\n']+\'
 }
 "false"		{
 	yylval.valor_lexico.line_number = lineNumber;
-	yylval.valor_lexico.token_type = Literal;
 	yylval.valor_lexico.token_val.literal_type = LiteralBool;
 	yylval.valor_lexico.token_val.int_value = 0;
 	yylval.valor_lexico.token_val.str = strdup(yytext);
@@ -94,14 +92,12 @@ dup_char	\'[^\n'][^\n']+\'
 {sp_char}	{return yytext[0];}
 {id}		{
 	yylval.valor_lexico.line_number = lineNumber;
-	yylval.valor_lexico.token_type = Identifier;
 	yylval.valor_lexico.token_val.str = strdup(yytext);
 	return TK_IDENTIFICADOR;
 }
 
 {integer}	{
 	yylval.valor_lexico.line_number = lineNumber;
-	yylval.valor_lexico.token_type = Literal;
 	yylval.valor_lexico.token_val.literal_type = LiteralInt;
 	yylval.valor_lexico.token_val.int_value = atoi(yytext);
 	yylval.valor_lexico.token_val.str = strdup(yytext);
@@ -110,7 +106,6 @@ dup_char	\'[^\n'][^\n']+\'
 
 {real}		{
 	yylval.valor_lexico.line_number = lineNumber;
-	yylval.valor_lexico.token_type = Literal;
 	yylval.valor_lexico.token_val.literal_type = LiteralFloat;
 	yylval.valor_lexico.token_val.float_value = atof(yytext);
 	yylval.valor_lexico.token_val.str = strdup(yytext);
@@ -119,7 +114,6 @@ dup_char	\'[^\n'][^\n']+\'
 
 {character}	{
 	yylval.valor_lexico.line_number = lineNumber;
-	yylval.valor_lexico.token_type = Literal;
 	yylval.valor_lexico.token_val.literal_type = LiteralChar;
 	yylval.valor_lexico.token_val.str = remove_quotes(yytext);
 	return TK_LIT_CHAR;
@@ -127,7 +121,6 @@ dup_char	\'[^\n'][^\n']+\'
 
 {str}		{
 	yylval.valor_lexico.line_number = lineNumber;
-	yylval.valor_lexico.token_type = Literal;
 	yylval.valor_lexico.token_val.literal_type = LiteralString;
 	yylval.valor_lexico.token_val.str = remove_quotes(yytext);
 	return TK_LIT_STRING;
@@ -136,4 +129,4 @@ dup_char	\'[^\n'][^\n']+\'
 [\n]		{lineNumber++;}
 {non_id}	{return TOKEN_ERRO;}
 {dup_char}	{return TOKEN_ERRO;}
-.			{return TOKEN_ERRO;}
+.		{return TOKEN_ERRO;}
