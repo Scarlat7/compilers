@@ -1,14 +1,13 @@
-#include <stdio.h>
-#include "enum.h"
 #include "tree.h"
 
 	/* BEWARE!!! NOTHING IN HERE HAS BEEN TESTED YET */
 
 Tree* new_tree(){
-	return make_node(Program, NULL);
+	ValorLexico dummy;
+	return make_node(PROGRAM, dummy);
 }
 
-Tree* make_node(TypeAST type, void *value){
+Tree* make_node(TypeAST type, ValorLexico value){
 	Tree* new_node = malloc(sizeof(Tree));
 	new_node->type = type;
 	new_node->value = value;
@@ -37,21 +36,24 @@ void insert_child(Tree *parent, Tree *child){
 	}
 }
 
-Tree* make_unary_node(TypeAST type, Tree* node){
-	Tree *parent = make_node(type, NULL);
+Tree* unary_node(TypeAST type, Tree* node){
+	ValorLexico dummy;
+	Tree *parent = make_node(type, dummy);
 	insert_child(parent, node);
 	return parent;
 }
 
-Tree* make_binary_node(TypeAST type, Tree* node, Tree* node2){
-	Tree *parent = make_node(type, NULL);
+Tree* binary_node(TypeAST type, Tree* node, Tree* node2){
+	ValorLexico dummy;
+	Tree *parent = make_node(type, dummy);
 	insert_child(parent, node);
 	insert_child(parent, node2);
 	return parent;
 }
 
-Tree* make_ternary_node(TypeAST type, Tree* node, Tree* node2, Tree *node3){
-	Tree *parent = make_node(type, NULL);
+Tree* ternary_node(TypeAST type, Tree* node, Tree* node2, Tree *node3){
+	ValorLexico dummy;
+	Tree *parent = make_node(type,dummy);
 	insert_child(parent, node);
 	insert_child(parent, node2);
 	insert_child(parent, node3);
@@ -78,7 +80,7 @@ void print_tree_depth(Tree *tree, int level){
 		Tree* current = tree->first_child;
 		print_tree_depth(current, level+1);
 		print_spaces(level);
-		printf("%p[%d]: %p\n",tree,tree->nb_children,tree->value);
+		printf("%p[%d]: %s\n",tree,tree->nb_children,tree->value.token_val.str);
 		while(current->next_sibling != NULL){
 			current = current->next_sibling;
 			print_tree_depth(current,level+1);

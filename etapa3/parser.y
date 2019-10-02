@@ -12,11 +12,13 @@
 
 %code requires {
 	#include "misc.h"
+	#include "tree.h"
 }
 
 /* yylval type */
 %union {
 	ValorLexico valor_lexico;
+	Tree* Tree;
 }
 
 /* Tokens definition */
@@ -65,6 +67,17 @@
 %token TK_LIT_STRING
 %token TK_IDENTIFICADOR
 %token TOKEN_ERRO
+
+/* Define types for semantic actions */
+%type <valor_lexico> TK_LIT_TRUE
+%type <valor_lexico> TK_LIT_FALSE
+%type <valor_lexico> TK_LIT_INT
+%type <valor_lexico> TK_LIT_FLOAT
+%type <valor_lexico> TK_LIT_STRING
+%type <valor_lexico> TK_LIT_CHAR
+%type <valor_lexico> TK_IDENTIFICADOR
+%type <Tree> expression
+%type <Tree> function_call
 
 /* Operators precedence */
 %left '(' ')' '[' ']'
@@ -181,51 +194,55 @@ break: TK_PR_BREAK;
 continue: TK_PR_CONTINUE;
 
 /* Arithmetic and logical expressions */
-expression: '(' expression ')' |
+expression: '(' expression ')' {$$ = $2;} |
 
 /* Unary operators */
-'+' expression %prec UPLUS |
-'-' expression %prec UMINUS |
-'!' expression |
-'&' expression %prec UADRESS |
-'*' expression %prec UPOINTER |
-'?' expression |
-'#' expression |
+'+' expression %prec UPLUS {$$ = $2;} |
+'-' expression %prec UMINUS {$$ = unary_node(SIGN_INVERSION, $2);} |
+'!' expression {$$ = unary_node(LOGICAL_NOT, $2);} |
+'&' expression %prec UADRESS {$$ = unary_node(ADDRESS, $2);} |
+'*' expression %prec UPOINTER {$$ = unary_node(POINTER, $2);} |
+'?' expression {$$ = unary_node(QUESTION_MARK, $2);} |
+'#' expression {$$ = unary_node(HASHTAG, $2);} |
 
 /* Binary operators */
-expression '+' expression |
-expression '-' expression |
-expression '*' expression |
-expression '/' expression |
-expression '%' expression |
-expression '|' expression |
-expression '&' expression |
-expression '^' expression |
-expression '<' expression |
-expression '>' expression | 
-expression TK_OC_LE expression |
-expression TK_OC_EQ expression |
-expression TK_OC_GE expression |
-expression TK_OC_NE expression |
-expression TK_OC_AND expression |
-expression TK_OC_OR expression |
+expression '+' expression {$$ = binary_node(PLUS, $1, $3);} |
+expression '-' expression {$$ = binary_node(MINUS, $1, $3);} |
+expression '*' expression {$$ = binary_node(MULTIPLICATION, $1, $3);} |
+expression '/' expression {$$ = binary_node(DIVISION, $1, $3);} |
+expression '%' expression {$$ = binary_node(MOD, $1, $3);} |
+expression '|' expression {$$ = binary_node(BITWISE_OR, $1, $3);} |
+expression '&' expression {$$ = binary_node(BITWISE_AND, $1, $3);} |
+expression '^' expression {$$ = binary_node(EXPONENT, $1, $3);} |
+expression '<' expression {$$ = binary_node(LESSER, $1, $3);} |
+expression '>' expression {$$ = binary_node(GREATER, $1, $3);} | 
+expression TK_OC_LE expression {$$ = binary_node(LESS_OR_EQUAL, $1, $3);} |
+expression TK_OC_EQ expression {$$ = binary_node(EQUAL, $1, $3);} |
+expression TK_OC_GE expression {$$ = binary_node(GREATER_OR_EQUAL, $1, $3);} |
+expression TK_OC_NE expression {$$ = binary_node(NOT_EQUAL, $1, $3);} |
+expression TK_OC_AND expression {$$ = binary_node(LOGICAL_AND, $1, $3);} |
+expression TK_OC_OR expression {$$ = binary_node(LOGICAL_OR, $1, $3);} |
 
 /* Ternary */
-expression '?' expression ':' expression |
+expression '?' expression ':' expression {$$ = ternary_node(TERNARY, $1, $3, $5);} |
 
 /* Vector */
-TK_IDENTIFICADOR '[' expression ']' |
+TK_IDENTIFICADOR '[' expression ']' {
+	Tree* identifier_node = make_node(IDENTIFIER, $1);
+	$$ = binary_node(ARRAY, identifier_node, $3);} |
 
 /* Function */
-function_call |
+function_call {$$ = $1;} |
 
 /* Arithmetic end-terms */
-TK_LIT_INT | TK_LIT_FLOAT | 
+TK_LIT_INT {$$ = make_node(LITERAL, $1);} |
+TK_LIT_FLOAT {$$ = make_node(LITERAL, $1);} | 
 
 /* Logic end-terms */
-TK_LIT_TRUE | TK_LIT_FALSE|
+TK_LIT_TRUE {$$ = make_node(LITERAL, $1);} | 
+TK_LIT_FALSE {$$ = make_node(LITERAL, $1);} |
 
 /* Identifier end-term*/
-TK_IDENTIFICADOR;
+TK_IDENTIFICADOR {$$ = make_node(IDENTIFIER, $1);};
 
 %%
