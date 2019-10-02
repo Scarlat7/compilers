@@ -80,24 +80,26 @@
 %type <Tree> function_call
 
 /* Operators precedence */
-%left '(' ')' '[' ']'
-%left '+' '-'
-%left '*' '/' '%'
+
 %left TK_OC_SR TK_OC_SL
-%left TK_OC_LE TK_OC_GE '>' '<'
-%left TK_OC_EQ TK_OC_NE
+%left TK_OC_LE TK_OC_GE '>' '<'TK_OC_EQ TK_OC_NE
 %left TK_OC_AND TK_OC_OR
 %left '&' '|'
+%right '!'
+%left '+' '-'
+%left '*' '/' '%' 
+%left '(' ')'
+%left '[' ']'
 %right '^'
 %right '?' ':' 
-%right '#' '!'
+%right '#'
 %right '='
 
 /* Different associativity based in whether it's a binary or unary op */
-%left UMINUS
-%left UPLUS
-%left UADRESS
-%left UPOINTER
+%right UMINUS
+%right UPLUS
+%right UADDRESS
+%right UPOINTER
 
 /* Detailed error message */
 %define parse.error verbose
@@ -197,10 +199,10 @@ continue: TK_PR_CONTINUE;
 expression: '(' expression ')' {$$ = $2;} |
 
 /* Unary operators */
-'+' expression %prec UPLUS {$$ = $2;} |
+'+' expression %prec UPLUS {$$ = unary_node(PLUS_SIGN, $2);} |
 '-' expression %prec UMINUS {$$ = unary_node(SIGN_INVERSION, $2);} |
 '!' expression {$$ = unary_node(LOGICAL_NOT, $2);} |
-'&' expression %prec UADRESS {$$ = unary_node(ADDRESS, $2);} |
+'&' expression %prec UADDRESS {$$ = unary_node(ADDRESS, $2);} |
 '*' expression %prec UPOINTER {$$ = unary_node(POINTER, $2);} |
 '?' expression {$$ = unary_node(QUESTION_MARK, $2);} |
 '#' expression {$$ = unary_node(HASHTAG, $2);} |
