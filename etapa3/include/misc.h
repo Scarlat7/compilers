@@ -1,3 +1,7 @@
+#ifndef MISC_H
+#define MISC_H
+
+
 #include <string.h>
 #include <stdio.h>
 #include "enum.h"
@@ -16,3 +20,4 @@ typedef struct VALOR_LEXICO {
 } ValorLexico;
 
 char* remove_quotes(char *str_base);
+#endif

@@ -16,11 +16,11 @@ SRC = $(wildcard src/*.c)
 OBJ = $(SRC:src/%.c=%.o)
 
 # Compiles all
-all : $(TARGET)
+all : parser.tab.c lex.yy.c $(TARGET)
 
 # Links all objects file to generate the target
-$(TARGET):  $(OBJ) parser.tab.c lex.yy.c lex.yy.o parser.tab.o main.o 
-	$(CC) $(CFLAGS) $(INC) $< lex.yy.o parser.tab.o main.o -o $(TARGET) -lfl
+$(TARGET):  $(OBJ)  lex.yy.o parser.tab.o main.o 
+	$(CC) $(CFLAGS) $(INC) $^ -o $(TARGET) -lfl
 
 # Generates the y.tab.c  bison file
 parser.tab.c: parser.y
@@ -42,8 +42,8 @@ parser.tab.o: parser.tab.c
 main.o: main.c
 	$(CC) $(INC) -c main.c
 
-# Misc library
-$(OBJ): $(SRC)
+# Includes 
+$(OBJ): %.o: src/%.c
 	$(CC) $(INC) $(CFLAGS) -c $< -o $@
 
 # Deletes object files, the target and the bison/flex files
