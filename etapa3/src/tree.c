@@ -58,6 +58,21 @@ Tree* make_ternary_node(TypeAST type, Tree* node, Tree* node2, Tree *node3){
 	return parent;
 }
 
+void free_tree(Tree* tree){
+	/* It's a leaf */
+	if(tree->nb_children == 0){
+		free(tree);
+	}else{
+		Tree* temp;
+		Tree* current = tree->first_child;
+		do{
+			temp = current->next_sibling;
+			free_tree(current);
+			current = temp;
+		}while(current->next_sibling != NULL);
+	}
+}
+
 void print_tree_depth(Tree *tree, int level){
 	if(tree != NULL){
 		Tree* current = tree->first_child;
