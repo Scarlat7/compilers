@@ -2,6 +2,7 @@
 	#include <stdio.h>
 
 	extern int get_line_number(void);
+	extern void *arvore;
 
 	int yylex(void);
 
@@ -112,9 +113,14 @@
 %start program
 %%
 
-program: body {$$ = unary_node(PROGRAM, $1);};
+program: body {
+	arvore = $$;
+};
 
-body: body function {$$ = binary_node(FUNCTION, $1, $2);}|
+body: body function {
+	$$ = $2;
+	insert_child($2,$1);
+}|
 body global_var {$$ = $1;} /* Because global_var can't be initialized */|
 {$$ = NULL;}/* Empty */;
 
@@ -126,7 +132,10 @@ global_var_types: type TK_IDENTIFICADOR | type TK_IDENTIFICADOR '[' TK_LIT_INT '
 type TK_IDENTIFICADOR '[' '+' TK_LIT_INT ']';
 
 /* Function definition */
-function: header command_block {$$ = binary_node(FUNCTION, $1, $2);};
+function: header command_block {
+	insert_child($1,$2);
+	$$ = $1;
+};
 header: type TK_IDENTIFICADOR '(' list_params ')' {$$ = make_node(IDENTIFIER, $2);}|
 TK_PR_STATIC type TK_IDENTIFICADOR '(' list_params ')' {$$ = make_node(IDENTIFIER, $3);};
 
@@ -244,8 +253,7 @@ non_void_list: list ',' expression | expression;
 
 /* Function call */
 function_call: TK_IDENTIFICADOR '(' list ')' {
-	Tree* id = make_node(IDENTIFIER, $1);
-	$$ = unary_node(FUNCTION,id);
+	$$ = make_node(FUNCTION_CALL, $1);
 };
 
 /* List */

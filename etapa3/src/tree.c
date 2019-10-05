@@ -15,6 +15,7 @@ Tree* make_node(TypeAST type, ValorLexico value){
 	new_node->last_child = NULL;
 	new_node->next_sibling = NULL;
 	new_node->nb_children = 0;
+	printf("make_node [%d]\n",type);
 	return new_node;
 }
 
@@ -44,6 +45,7 @@ Tree* unary_node(TypeAST type, Tree* node){
 	ValorLexico dummy;
 	Tree *parent = make_node(type, dummy);
 	insert_child(parent, node);
+	printf("unary_node [%d]\n",type);
 	return parent;
 }
 
@@ -52,6 +54,7 @@ Tree* binary_node(TypeAST type, Tree* node, Tree* node2){
 	Tree *parent = make_node(type, dummy);
 	insert_child(parent, node);
 	insert_child(parent, node2);
+	printf("binary_node [%d]\n",type);
 	return parent;
 }
 
@@ -61,6 +64,7 @@ Tree* ternary_node(TypeAST type, Tree* node, Tree* node2, Tree *node3){
 	insert_child(parent, node);
 	insert_child(parent, node2);
 	insert_child(parent, node3);
+	printf("ternary_node [%d]\n",type);
 	return parent;
 }
 
@@ -71,6 +75,7 @@ Tree* quartenary_node(TypeAST type, Tree* node, Tree* node2, Tree *node3, Tree *
 	insert_child(parent, node2);
 	insert_child(parent, node3);
 	insert_child(parent, node4);
+	printf("quartenary_node [%d]\n",type);
 	return parent;
 }
 
@@ -82,21 +87,26 @@ Tree* cinquieme_node(TypeAST type, Tree* node, Tree* node2, Tree *node3, Tree *n
 	insert_child(parent, node3);
 	insert_child(parent, node4);
 	insert_child(parent, node5);
+	printf("cinquieme_node [%d]\n",type);
 	return parent;
 }
 
 void free_tree(Tree* tree){
 	/* It's a leaf */
 	if(tree->nb_children == 0){
+		free(tree->value.token_val.str);
 		free(tree);
+		printf("leaf\n");
 	}else{
 		Tree* temp;
-		Tree* current = tree->first_child;
-		do{
+		Tree* current = tree;
+		while(current != NULL ){
 			temp = current->next_sibling;
 			free_tree(current);
+			free(current);
+			free(current->value.token_val.str);
 			current = temp;
-		}while(current->next_sibling != NULL);
+		}
 	}
 }
 
@@ -104,9 +114,9 @@ void print_tree_depth(Tree *tree, int level){
 	if(tree != NULL){
 		Tree* current = tree->first_child;
 		print_tree_depth(current, level+1);
-		print_spaces(level);
-		printf("%p[%d]: %s\n",tree,tree->nb_children,tree->value.token_val.str);
-		while(current->next_sibling != NULL){
+		print_spaces(2*level);
+		printf("%p[%d]: %d\n",tree,tree->nb_children,tree->type);
+		while(current != NULL && current->next_sibling != NULL){
 			current = current->next_sibling;
 			print_tree_depth(current,level+1);
 		}
