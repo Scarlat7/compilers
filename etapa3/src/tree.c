@@ -92,22 +92,14 @@ Tree* cinquieme_node(TypeAST type, Tree* node, Tree* node2, Tree *node3, Tree *n
 }
 
 void free_tree(Tree* tree){
-	/* It's a leaf */
-	if(tree->nb_children == 0){
-		free(tree->value.token_val.str);
-		free(tree);
-		printf("leaf\n");
-	}else{
-		Tree* temp;
-		Tree* current = tree;
-		while(current != NULL ){
-			temp = current->next_sibling;
-			free_tree(current);
-			free(current);
-			free(current->value.token_val.str);
-			current = temp;
-		}
+	Tree* temp;
+	Tree* current = tree->first_child;
+	while(current != NULL ){
+		temp = current->next_sibling;
+		free_tree(current);
+		current = temp;
 	}
+	free(tree);
 }
 
 void print_tree_depth(Tree *tree, int level){
