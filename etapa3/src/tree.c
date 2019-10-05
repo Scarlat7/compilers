@@ -99,6 +99,8 @@ void free_tree(Tree* tree){
 		free_tree(current);
 		current = temp;
 	}
+	if(tree->type == LITERAL || tree->type == IDENTIFIER)
+		free(tree->value.token_val.str);
 	free(tree);
 }
 
