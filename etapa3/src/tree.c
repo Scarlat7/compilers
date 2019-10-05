@@ -19,9 +19,13 @@ Tree* make_node(TypeAST type, ValorLexico value){
 }
 
 void insert_child(Tree *parent, Tree *child){
-	if(parent == NULL || child == NULL){
+	if(parent == NULL){
 		fprintf(stderr,"[Function: %s] Impossible to insert child to tree, null pointer encountered.\n", __func__);
 		exit(-1);
+	}
+
+	if(child == NULL){
+		return;
 	}
 
 	if(parent->nb_children == 0){
@@ -57,6 +61,27 @@ Tree* ternary_node(TypeAST type, Tree* node, Tree* node2, Tree *node3){
 	insert_child(parent, node);
 	insert_child(parent, node2);
 	insert_child(parent, node3);
+	return parent;
+}
+
+Tree* quartenary_node(TypeAST type, Tree* node, Tree* node2, Tree *node3, Tree *node4){
+	ValorLexico dummy;
+	Tree *parent = make_node(type,dummy);
+	insert_child(parent, node);
+	insert_child(parent, node2);
+	insert_child(parent, node3);
+	insert_child(parent, node4);
+	return parent;
+}
+
+Tree* cinquieme_node(TypeAST type, Tree* node, Tree* node2, Tree *node3, Tree *node4, Tree *node5){
+	ValorLexico dummy;
+	Tree *parent = make_node(type,dummy);
+	insert_child(parent, node);
+	insert_child(parent, node2);
+	insert_child(parent, node3);
+	insert_child(parent, node4);
+	insert_child(parent, node5);
 	return parent;
 }
 

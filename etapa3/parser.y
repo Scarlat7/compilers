@@ -76,12 +76,13 @@
 %type <valor_lexico> TK_LIT_STRING
 %type <valor_lexico> TK_LIT_CHAR
 %type <valor_lexico> TK_IDENTIFICADOR
-%type <Tree> expression
-%type <Tree> function_call
-%type <Tree> break
-%type <Tree> continue
-%type <Tree> return
-%type <Tree> attribution
+%type <Tree> program body
+%type <Tree> expression literals shifts
+%type <Tree> function_call simple_command header function
+%type <Tree> break continue return
+%type <Tree> attribution initializations var_init
+%type <Tree> list commands_for command_block list_for command_list commands
+%type <Tree> ifelse while for
 
 /* Operators precedence */
 
@@ -111,9 +112,11 @@
 %start program
 %%
 
-program: program function |
-program global_var |
-/* Empty */;
+program: body {$$ = unary_node(PROGRAM, $1);};
+
+body: body function {$$ = binary_node(FUNCTION, $1, $2);}|
+body global_var {$$ = $1;} /* Because global_var can't be initialized */|
+{$$ = NULL;}/* Empty */;
 
 /* Global variables */
 global_var: global_var_types ';' | 
@@ -123,53 +126,97 @@ global_var_types: type TK_IDENTIFICADOR | type TK_IDENTIFICADOR '[' TK_LIT_INT '
 type TK_IDENTIFICADOR '[' '+' TK_LIT_INT ']';
 
 /* Function definition */
-function: header command_block;
-header: type TK_IDENTIFICADOR '(' list_params ')' |
-TK_PR_STATIC type TK_IDENTIFICADOR '(' list_params ')';
+function: header command_block {$$ = binary_node(FUNCTION, $1, $2);};
+header: type TK_IDENTIFICADOR '(' list_params ')' {$$ = make_node(IDENTIFIER, $2);}|
+TK_PR_STATIC type TK_IDENTIFICADOR '(' list_params ')' {$$ = make_node(IDENTIFIER, $3);};
 
 /* List of function parameters */
 list_params: list_params ',' param | param | /* Empty */;
 param: type TK_IDENTIFICADOR | TK_PR_CONST type TK_IDENTIFICADOR;
 
 /* Simple commands */
-simple_command: commands ';';
+simple_command: commands ';' {$$ = $1;};
 
-commands: var_declaration | attribution | input | output |
-function_call | return | break | continue | command_block |
-shifts | while | for | ifelse ;
+commands: var_declaration {$$ = NULL;} | var_init {$$ = $1;} | attribution {$$ = $1;} 
+| input {$$ = NULL;} | output {$$ = NULL;} | function_call {$$ = $1;} |
+return {$$ = $1;} | break {$$ = $1;} | continue {$$ = $1;} | command_block {$$ = $1;} |
+shifts {$$ = $1;} | while {$$ = $1;} | for {$$ = $1;} | ifelse {$$ = $1;} ;
 
 /* Command block */
-command_block: '{' command_list '}';
-command_list: command_list simple_command | /* Empty */;
+command_block: '{' command_list '}' {$$ = $2;};
+
+command_list: command_list simple_command {
+	$$ = $2;
+	insert_child($$,$1);
+} | /* Empty */{$$ = NULL;};
 
 /* Shifts op */
-shifts: TK_IDENTIFICADOR TK_OC_SL expression |
-TK_IDENTIFICADOR TK_OC_SR expression |
-TK_IDENTIFICADOR '[' expression ']' TK_OC_SL expression |
-TK_IDENTIFICADOR '[' expression ']' TK_OC_SR expression;
+shifts: TK_IDENTIFICADOR TK_OC_SL expression {
+	Tree* id = make_node(IDENTIFIER, $1);
+	$$ = binary_node(SHIFT_LEFT, id, $3);
+} |
+TK_IDENTIFICADOR TK_OC_SR expression {
+	Tree* id = make_node(IDENTIFIER, $1);
+	$$ = binary_node(SHIFT_LEFT, id, $3);
+}  |
+TK_IDENTIFICADOR '[' expression ']' TK_OC_SL expression {
+	Tree* id = make_node(IDENTIFIER, $1);
+	Tree *array = binary_node(ARRAY, id, $3);
+	$$ = binary_node(SHIFT_LEFT, array, $6);
+} |
+TK_IDENTIFICADOR '[' expression ']' TK_OC_SR expression {
+	Tree* id = make_node(IDENTIFIER, $1);
+	Tree *array = binary_node(ARRAY, id, $3);
+	$$ = binary_node(SHIFT_RIGHT, array, $6);
+};
 
 /* Flow control */
-while: TK_PR_WHILE '(' expression ')' TK_PR_DO command_block;
-for: TK_PR_FOR '(' list_for ':' expression ':' list_for ')' command_block;
-ifelse: TK_PR_IF '(' expression ')' command_block |
-TK_PR_IF '(' expression ')' command_block TK_PR_ELSE command_block;
+while: TK_PR_WHILE '(' expression ')' TK_PR_DO command_block {
+	$$ = binary_node(WHILE, $3, $6);
+};
+
+for: TK_PR_FOR '(' list_for ':' expression ':' list_for ')' command_block {
+	$$ = quartenary_node(FOR, $3, $5, $7, $9);
+};
+
+ifelse: TK_PR_IF '(' expression ')' command_block {
+	$$ = binary_node(IF, $3, $5);
+} |
+TK_PR_IF '(' expression ')' command_block TK_PR_ELSE command_block {
+	$$ = ternary_node(IF_ELSE, $3, $5, $7);
+};
 
 /* List of possible for commands */
-list_for: list_for  ',' commands_for  | commands_for ;
-commands_for: var_declaration | attribution | input | return |
-break | continue | expression | shifts; 
+list_for: list_for  ',' commands_for  {$$ = binary_node(LIST_FOR,$3,$1);}|
+commands_for {$$ = $1;} ;
+commands_for: var_declaration {$$ = NULL;} |
+var_init {$$ = $1;} |
+attribution {$$ = $1;} |
+input {$$ = NULL;}|
+return {$$ = $1;}|
+break {$$ = $1;}|
+continue {$$ = $1;}|
+expression {$$ = $1;}|
+shifts {$$ = $1;}; 
 
 /* Variable declaration */
-var_declaration: var_params type TK_IDENTIFICADOR |
-var_params type TK_IDENTIFICADOR TK_OC_LE initializations;
+var_declaration: var_params type TK_IDENTIFICADOR ;
+var_init: var_params type TK_IDENTIFICADOR TK_OC_LE initializations {
+	Tree* id = make_node(IDENTIFIER, $3);
+	$$ = binary_node(ASSIGNMENT, id, $5);
+};
 
 /* Possible variable initializations */
-initializations: TK_IDENTIFICADOR | literals;
+initializations: TK_IDENTIFICADOR {$$ = make_node(IDENTIFIER, $1);} |
+literals {$$ = $1;} ;
 
 /* Literals */
-literals: TK_LIT_TRUE | TK_LIT_FALSE |
-TK_LIT_INT | TK_LIT_FLOAT |
-TK_LIT_STRING | TK_LIT_CHAR;
+literals: TK_LIT_TRUE {$$ = make_node(LITERAL, $1);} |
+TK_LIT_FALSE {$$ = make_node(LITERAL, $1);} |
+TK_LIT_INT {$$ = make_node(LITERAL, $1);} |
+TK_LIT_FLOAT {$$ = make_node(LITERAL, $1);} |
+TK_LIT_STRING {$$ = make_node(LITERAL, $1);} |
+TK_LIT_CHAR {$$ = make_node(LITERAL, $1);} ;
 
 /* Variable types */
 type: TK_PR_INT | TK_PR_FLOAT | TK_PR_CHAR | TK_PR_BOOL | TK_PR_STRING;
@@ -196,10 +243,15 @@ output: TK_PR_OUTPUT non_void_list;
 non_void_list: list ',' expression | expression;
 
 /* Function call */
-function_call: TK_IDENTIFICADOR '(' list ')';
+function_call: TK_IDENTIFICADOR '(' list ')' {
+	Tree* id = make_node(IDENTIFIER, $1);
+	$$ = unary_node(FUNCTION,id);
+};
 
 /* List */
-list: list ',' expression | expression | /* Empty */;
+list: list ',' expression {$$ = binary_node(LIST_PARAM, $3, $1);} |
+expression {$$ = $1;}  |
+{$$ = NULL;} /* Empty */;
 
 /* Control commands */
 return: TK_PR_RETURN expression {$$ = unary_node(RETURN, $2);} ;

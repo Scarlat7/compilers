@@ -50,7 +50,9 @@ typedef enum {
 	POINTER,
 	QUESTION_MARK,
 	HASHTAG,
-	EXPONENT
+	EXPONENT,
+	LIST_PARAM,
+	LIST_FOR
 } TypeAST;
 
 #endif
