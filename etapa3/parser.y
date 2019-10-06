@@ -128,8 +128,9 @@ body global_var {$$ = $1;} /* Because global_var can't be initialized */|
 global_var: global_var_types ';' | 
 TK_PR_STATIC global_var_types ';';
 
-global_var_types: type TK_IDENTIFICADOR | type TK_IDENTIFICADOR '[' TK_LIT_INT ']' |
-type TK_IDENTIFICADOR '[' '+' TK_LIT_INT ']';
+global_var_types: type TK_IDENTIFICADOR {free($2.token_val.str);}|
+type TK_IDENTIFICADOR '[' TK_LIT_INT ']' {free($2.token_val.str); free($4.token_val.str);}|
+type TK_IDENTIFICADOR '[' '+' TK_LIT_INT ']' {free($2.token_val.str);free($5.token_val.str);};
 
 /* Function definition */
 function: header command_block {
@@ -141,7 +142,8 @@ TK_PR_STATIC type TK_IDENTIFICADOR '(' list_params ')' {$$ = make_node(IDENTIFIE
 
 /* List of function parameters */
 list_params: list_params ',' param | param | /* Empty */;
-param: type TK_IDENTIFICADOR {free($2.token_val.str);}| TK_PR_CONST type TK_IDENTIFICADOR;
+param: type TK_IDENTIFICADOR {free($2.token_val.str);}|
+TK_PR_CONST type TK_IDENTIFICADOR {free($3.token_val.str);};
 
 /* Simple commands */
 simple_command: commands ';' {$$ = $1;};
@@ -156,7 +158,8 @@ command_block: '{' command_list '}' {$$ = $2;};
 
 command_list: command_list simple_command {
 	$$ = $2;
-	insert_child($$,$1);
+	if($$ == NULL) $$ = $1;
+	else insert_child($$,$1);
 } | /* Empty */{$$ = NULL;};
 
 /* Shifts op */
@@ -209,7 +212,7 @@ expression {$$ = $1;}|
 shifts {$$ = $1;}; 
 
 /* Variable declaration */
-var_declaration: var_params type TK_IDENTIFICADOR ;
+var_declaration: var_params type TK_IDENTIFICADOR {free($3.token_val.str);};
 var_init: var_params type TK_IDENTIFICADOR TK_OC_LE initializations {
 	Tree* id = make_node(IDENTIFIER, $3);
 	$$ = binary_node(ASSIGNMENT, id, $5);
@@ -245,15 +248,17 @@ TK_IDENTIFICADOR '[' expression ']' '=' expression {
 } ;
 
 /* IO commands */
-input: TK_PR_INPUT expression;
+input: TK_PR_INPUT expression {free_tree($2);};
 output: TK_PR_OUTPUT non_void_list;
 
 /* Non-void list */
-non_void_list: list ',' expression | expression;
+non_void_list: list ',' expression {free_tree($3); free_tree($1);}|
+expression {free_tree($1);};
 
 /* Function call */
 function_call: TK_IDENTIFICADOR '(' list ')' {
 	$$ = make_node(FUNCTION_CALL, $1);
+	insert_child($$,$3);
 };
 
 /* List */

@@ -86,18 +86,21 @@ Tree* cinquieme_node(TypeAST type, Tree* node, Tree* node2, Tree *node3, Tree *n
 }
 
 void free_tree(Tree* tree){
-	Tree* temp;
-	Tree* current = tree->first_child;
-	while(current != NULL ){
-		temp = current->next_sibling;
-		free_tree(current);
-		current = temp;
-	}
-	if(tree->type == LITERAL || tree->type == IDENTIFIER){
-		free(tree->value.token_val.str);
+	if(tree != NULL){
+		Tree* temp;
+		Tree* current = tree->first_child;
+		while(current != NULL ){
+			temp = current->next_sibling;
+			free_tree(current);
+			current = temp;
+		}
+		if(tree->type == LITERAL || tree->type == IDENTIFIER ||
+			tree->type == FUNCTION_CALL){
+			free(tree->value.token_val.str);
 
+		}
+		free(tree);
 	}
-	free(tree);
 }
 
 void print_tree_depth(Tree *tree, int level){

@@ -24,5 +24,5 @@ for testfile in $TEST_DIR
 do
 	echo "************ TEST $testfile ************" >> test_result.txt
 	cat $testfile >> test_result.txt
-	cat $testfile | ./etapa$ETAPA/etapa$ETAPA >> test_result.txt 2>&1
+	cat $testfile | valgrind ./etapa$ETAPA/etapa$ETAPA  >> test_result.txt 2>&1
 done
