@@ -5,5 +5,8 @@ void libera(void *arvore){
 }
 
 void exporta(void *arvore){
-	print_tree_depth(arvore,0);
+	FILE *file;
+	file = fopen("e3.csv", "w");
+	print_tree_depth(arvore, 0, file);
+	fclose(file);
 }

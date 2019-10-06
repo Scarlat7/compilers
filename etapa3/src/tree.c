@@ -103,28 +103,25 @@ void free_tree(Tree* tree){
 	}
 }
 
-void print_tree_depth(Tree *tree, int level)
+void print_tree_depth(Tree *tree, int level, FILE *file)
 {
-	FILE *file;
-	file = fopen("e3.csv", "w");
 	if (tree != NULL)
 	{
 		if (file != NULL)
 		{
 			Tree *current = tree->first_child;
-			print_tree_depth(current, level + 1);
+			print_tree_depth(current, level + 1, file);
 			//print_spaces(2*level);
 			//printf("%p[%d]: %d\n",tree,tree->nb_children,tree->type);
 			while (current != NULL)
 			{
-				printf("%p, %p\n", tree, current);
+				//printf("%p, %p\n", tree, current);
 				fprintf(file, "%p, %p\n", tree, current);
 				current = current->next_sibling;
-				print_tree_depth(current, level + 1);
+				print_tree_depth(current, level + 1, file);
 			}
 		}
 	}
-	fclose(file);
 }
 
 void print_spaces(int spaces){
