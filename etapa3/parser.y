@@ -87,19 +87,20 @@
 
 /* Operators precedence */
 
-%left TK_OC_SR TK_OC_SL
-%left TK_OC_LE TK_OC_GE '>' '<'TK_OC_EQ TK_OC_NE
+%right '='
+%right '?' ':' 
 %left TK_OC_AND TK_OC_OR
+%left TK_OC_LE TK_OC_GE '>' '<'TK_OC_EQ TK_OC_NE
 %left '&' '|'
+%left TK_OC_SR TK_OC_SL
 %right '!'
 %left '+' '-'
 %left '*' '/' '%' 
 %left '(' ')'
 %left '[' ']'
 %right '^'
-%right '?' ':' 
 %right '#'
-%right '='
+
 
 /* Different associativity based in whether it's a binary or unary op */
 %right UMINUS

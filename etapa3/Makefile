@@ -48,4 +48,4 @@ $(OBJ): %.o: src/%.c
 
 # Deletes object files, the target and the bison/flex files
 clean:
-	rm *.o $(TARGET) lex.yy.c parser.tab.c parser.tab.h parser.output
+	rm *.o $(TARGET) lex.yy.c parser.tab.c parser.tab.h parser.output e3.csv
