@@ -141,7 +141,7 @@ TK_PR_STATIC type TK_IDENTIFICADOR '(' list_params ')' {$$ = make_node(IDENTIFIE
 
 /* List of function parameters */
 list_params: list_params ',' param | param | /* Empty */;
-param: type TK_IDENTIFICADOR | TK_PR_CONST type TK_IDENTIFICADOR;
+param: type TK_IDENTIFICADOR {free($2.token_val.str);}| TK_PR_CONST type TK_IDENTIFICADOR;
 
 /* Simple commands */
 simple_command: commands ';' {$$ = $1;};

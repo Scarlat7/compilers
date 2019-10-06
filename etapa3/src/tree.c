@@ -15,7 +15,6 @@ Tree* make_node(TypeAST type, ValorLexico value){
 	new_node->last_child = NULL;
 	new_node->next_sibling = NULL;
 	new_node->nb_children = 0;
-	printf("make_node [%d]\n",type);
 	return new_node;
 }
 
@@ -45,7 +44,6 @@ Tree* unary_node(TypeAST type, Tree* node){
 	ValorLexico dummy;
 	Tree *parent = make_node(type, dummy);
 	insert_child(parent, node);
-	printf("unary_node [%d]\n",type);
 	return parent;
 }
 
@@ -54,7 +52,6 @@ Tree* binary_node(TypeAST type, Tree* node, Tree* node2){
 	Tree *parent = make_node(type, dummy);
 	insert_child(parent, node);
 	insert_child(parent, node2);
-	printf("binary_node [%d]\n",type);
 	return parent;
 }
 
@@ -64,7 +61,6 @@ Tree* ternary_node(TypeAST type, Tree* node, Tree* node2, Tree *node3){
 	insert_child(parent, node);
 	insert_child(parent, node2);
 	insert_child(parent, node3);
-	printf("ternary_node [%d]\n",type);
 	return parent;
 }
 
@@ -75,7 +71,6 @@ Tree* quartenary_node(TypeAST type, Tree* node, Tree* node2, Tree *node3, Tree *
 	insert_child(parent, node2);
 	insert_child(parent, node3);
 	insert_child(parent, node4);
-	printf("quartenary_node [%d]\n",type);
 	return parent;
 }
 
@@ -87,7 +82,6 @@ Tree* cinquieme_node(TypeAST type, Tree* node, Tree* node2, Tree *node3, Tree *n
 	insert_child(parent, node3);
 	insert_child(parent, node4);
 	insert_child(parent, node5);
-	printf("cinquieme_node [%d]\n",type);
 	return parent;
 }
 
@@ -99,8 +93,10 @@ void free_tree(Tree* tree){
 		free_tree(current);
 		current = temp;
 	}
-	if(tree->type == LITERAL || tree->type == IDENTIFIER)
+	if(tree->type == LITERAL || tree->type == IDENTIFIER){
 		free(tree->value.token_val.str);
+
+	}
 	free(tree);
 }
 
