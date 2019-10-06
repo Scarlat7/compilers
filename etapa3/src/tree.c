@@ -104,9 +104,10 @@ void print_tree_depth(Tree *tree, int level){
 	if(tree != NULL){
 		Tree* current = tree->first_child;
 		print_tree_depth(current, level+1);
-		print_spaces(2*level);
-		printf("%p[%d]: %d\n",tree,tree->nb_children,tree->type);
-		while(current != NULL && current->next_sibling != NULL){
+		//print_spaces(2*level);
+		//printf("%p[%d]: %d\n",tree,tree->nb_children,tree->type);
+		while(current != NULL){
+			printf("%p, %p\n",tree,current);
 			current = current->next_sibling;
 			print_tree_depth(current,level+1);
 		}
