@@ -1,8 +1,0 @@
-//ERROR: variável faltando no comando switch
-int main()
-{
-  switch ( ) {
-    case 'a':
-      y = 2;
-  };
-}

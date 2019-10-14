@@ -1,2 +1,0 @@
-//Cada campo tem o encapsulamento, que é opcional, o tipo e um identificador do campo.
-class AST_t [ int a ];

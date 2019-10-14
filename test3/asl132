@@ -1,6 +1,0 @@
-//ERROR: lista obrigatória
-int main() {
-  foreach( x: ) {
-
-  };
-}
