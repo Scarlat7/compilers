@@ -63,5 +63,9 @@ etapa1
 etapa2
 etapa3
 
+# Output files
+e3.csv
+
 # Test results
 test_result.txt
+valgrind.txt

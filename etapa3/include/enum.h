@@ -53,7 +53,8 @@ typedef enum {
 	EXPONENT, //38
 	LIST_PARAM, //39
 	LIST_FOR, //40
-	FUNCTION_CALL //41
+	FUNCTION_CALL, //41
+	EMPTY_BLOCK //42
 } TypeAST;
 
 #endif

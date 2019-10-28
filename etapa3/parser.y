@@ -79,11 +79,11 @@
 %type <valor_lexico> TK_IDENTIFICADOR
 %type <Tree> program body
 %type <Tree> expression literals shifts
-%type <Tree> function_call simple_command header function
+%type <Tree> function_call simple_command header function function_body
 %type <Tree> break continue return
 %type <Tree> attribution initializations var_init
 %type <Tree> list commands_for command_block list_for command_list commands
-%type <Tree> ifelse while for
+%type <Tree> ifelse while for command_body
 
 /* Operators precedence */
 
@@ -118,11 +118,11 @@ program: body {
 	arvore = $$;
 };
 
-body: body function {
-	$$ = $2;
-	insert_child($2,$1);
+body: function body {
+	$$ = $1;
+	insert_child($1,$2);
 }|
-body global_var {$$ = $1;} /* Because global_var can't be initialized */|
+global_var body {$$ = $2;} /* Because global_var can't be initialized */|
 {$$ = NULL;}/* Empty */;
 
 /* Global variables */
@@ -134,7 +134,7 @@ type TK_IDENTIFICADOR '[' TK_LIT_INT ']' {free($2.token_val.str); free($4.token_
 type TK_IDENTIFICADOR '[' '+' TK_LIT_INT ']' {free($2.token_val.str);free($5.token_val.str);};
 
 /* Function definition */
-function: header command_block {
+function: header function_body {
 	insert_child($1,$2);
 	$$ = $1;
 };
@@ -155,13 +155,34 @@ return {$$ = $1;} | break {$$ = $1;} | continue {$$ = $1;} | command_block {$$ =
 shifts {$$ = $1;} | while {$$ = $1;} | for {$$ = $1;} | ifelse {$$ = $1;} ;
 
 /* Command block */
-command_block: '{' command_list '}' {$$ = $2;};
+command_block: '{' command_list '}' {
+	ValorLexico dummy;
+	$$ = make_node(EMPTY_BLOCK, dummy);
+	insert_child($$, $2);
+};
 
-command_list: command_list simple_command {
-	$$ = $2;
-	if($$ == NULL) $$ = $1;
-	else insert_child($$,$1);
-} | /* Empty */{$$ = NULL;};
+/* Function body */
+function_body: '{' command_list '}' { $$ = $2; };
+
+/* Command body */
+command_body: '{' command_list '}' {
+	if($2 == NULL){
+		ValorLexico dummy;
+		$$ = make_node(EMPTY_BLOCK, dummy);
+	} else {
+		$$ = $2;
+	}
+}
+
+/* List of commands */
+command_list: simple_command command_list {
+	if($1 == NULL) {
+		$$ = $2;
+	} else {
+		$$ = $1;
+		insert_child($1,$2);
+	}
+} | /* Empty */ {$$=NULL;} ;
 
 /* Shifts op */
 shifts: TK_IDENTIFICADOR TK_OC_SL expression {
@@ -184,24 +205,32 @@ TK_IDENTIFICADOR '[' expression ']' TK_OC_SR expression {
 };
 
 /* Flow control */
-while: TK_PR_WHILE '(' expression ')' TK_PR_DO command_block {
+while: TK_PR_WHILE '(' expression ')' TK_PR_DO command_body {
 	$$ = binary_node(WHILE, $3, $6);
 };
 
-for: TK_PR_FOR '(' list_for ':' expression ':' list_for ')' command_block {
+for: TK_PR_FOR '(' list_for ':' expression ':' list_for ')' command_body {
 	$$ = quartenary_node(FOR, $3, $5, $7, $9);
 };
 
-ifelse: TK_PR_IF '(' expression ')' command_block {
+ifelse: TK_PR_IF '(' expression ')' command_body {
 	$$ = binary_node(IF, $3, $5);
 } |
-TK_PR_IF '(' expression ')' command_block TK_PR_ELSE command_block {
+TK_PR_IF '(' expression ')' command_block TK_PR_ELSE command_body {
 	$$ = ternary_node(IF_ELSE, $3, $5, $7);
 };
 
 /* List of possible for commands */
-list_for: list_for  ',' commands_for  {$$ = binary_node(LIST_FOR,$3,$1);}|
+list_for: commands_for  ','  list_for {
+	if($1 == NULL) {
+		$$ = $3;
+	} else {
+		$$ = $1;
+		insert_child($1,$3);
+	}
+}|
 commands_for {$$ = $1;} ;
+
 commands_for: var_declaration {$$ = NULL;} |
 var_init {$$ = $1;} |
 attribution {$$ = $1;} |
@@ -263,7 +292,7 @@ function_call: TK_IDENTIFICADOR '(' list ')' {
 };
 
 /* List */
-list: list ',' expression {$$ = binary_node(LIST_PARAM, $3, $1);} |
+list: list ',' expression {$$ = $3; insert_child($$, $1);} |
 expression {$$ = $1;}  |
 {$$ = NULL;} /* Empty */;
 
@@ -314,12 +343,7 @@ TK_IDENTIFICADOR '[' expression ']' {
 function_call {$$ = $1;} |
 
 /* Arithmetic end-terms */
-TK_LIT_INT {$$ = make_node(LITERAL, $1);} |
-TK_LIT_FLOAT {$$ = make_node(LITERAL, $1);} | 
-
-/* Logic end-terms */
-TK_LIT_TRUE {$$ = make_node(LITERAL, $1);} | 
-TK_LIT_FALSE {$$ = make_node(LITERAL, $1);} |
+literals { $$ = $1; } |
 
 /* Identifier end-term*/
 TK_IDENTIFICADOR {$$ = make_node(IDENTIFIER, $1);};

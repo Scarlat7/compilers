@@ -110,15 +110,19 @@ void print_tree_depth(Tree *tree, int level, FILE *file)
 		if (file != NULL)
 		{
 			Tree *current = tree->first_child;
-			print_tree_depth(current, level + 1, file);
-			//print_spaces(2*level);
-			//printf("%p[%d]: %d\n",tree,tree->nb_children,tree->type);
+			if(current == NULL && level == 0){
+				fprintf(file, "%p,\n", tree);
+				return;
+			}
+
+			// Go through all siblings
 			while (current != NULL)
 			{
-				//printf("%p, %p\n", tree, current);
 				fprintf(file, "%p, %p\n", tree, current);
-				current = current->next_sibling;
+				//print_spaces(2*level);
+				//printf("%p[%d]: %d\n",tree,tree->nb_children,tree->type);
 				print_tree_depth(current, level + 1, file);
+				current = current->next_sibling;
 			}
 		}
 	}

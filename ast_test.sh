@@ -23,7 +23,7 @@ echo "test, tcno, valgrind" >> test_result.txt
 
 TEST_DIR="test3/"
 
-for test in `ls $TEST_DIR -I '*.*'` `ls $TEST_DIR*.ptg`
+for test in `ls $TEST_DIR -I '*.*'` `cd $TEST_DIR; ls *.ptg`
 do
 	printf "$test," >> test_result.txt
 	if [ "$VALGRIND" = true ]; then
@@ -43,8 +43,8 @@ do
 	fi
 
 	# At this point we have the output at ./e3.csv
-	DOT_REF=test3/$test.ref.dot
-	DOT_GEN=test3/$test.gen.dot
+	DOT_REF=$TEST_DIR$test.ref.dot
+	DOT_GEN=$TEST_DIR$test.gen.dot
 
 	# Turn the output into a .dot file
 	python3 $CONVERT_SCRIPT e3.csv >	$DOT_GEN
